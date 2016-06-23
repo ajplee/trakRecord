@@ -1,7 +1,9 @@
 package soylente.com.trakrecord;
 
+import android.os.SystemClock;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -15,12 +17,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class mainMap extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private List<Camp> camps;
+    private List<Camp> camps = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,8 +33,9 @@ public class mainMap extends FragmentActivity implements OnMapReadyCallback {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        Firebase.setAndroidContext(this);
+        getCamps();
         mapFragment.getMapAsync(this);
-        camps = getCamps();
     }
 
 
@@ -44,18 +50,23 @@ public class mainMap extends FragmentActivity implements OnMapReadyCallback {
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;/*
-        for(int i = 0; i < camps.size; i++) {
-            if (camps.event_camps[i] != null)
-                mMap.addMarker(new MarkerOptions().position(camps.getCoords(i)).title(camps.getName(i)));
+        mMap = googleMap;
+
+        if (!camps.isEmpty()) {
+            for (Camp c : camps) {
+                System.out.println(c.getCampName() + "  " + c.getCoords());
+                mMap.addMarker(new MarkerOptions().position(c.getCoords()).title(c.getCampName()));
+            }
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(camps.get(0).getCoords()));
+            mMap.moveCamera(CameraUpdateFactory.zoomTo(18));
         }
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(camps.getCoords(1)));*/
     }
-    private List<Camp> getCamps(){
-    Firebase ref = new Firebase("https://trakrecord.firebaseio.com/Camps");
-        final List<Camp> camps = new ArrayList<>();
+
+    private void getCamps() {
+/*        Firebase ref = new Firebase("https://trakrecord.firebaseio.com/Camps");
         // Attach an listener to read the data at our posts reference
-        ValueEventListener valueEventListener = ref.addValueEventListener(new ValueEventListener() {
+
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 System.out.println("There are " + snapshot.getChildrenCount() + " camps");
@@ -68,7 +79,9 @@ public class mainMap extends FragmentActivity implements OnMapReadyCallback {
             public void onCancelled(FirebaseError firebaseError) {
                 System.out.println("The read failed: " + firebaseError.getMessage());
             }
-        });
-        return camps;
+        });*/
+        camps.add(new Camp("Home", 43.637141, -79.406711));
+        camps.add(new Camp("1st", 43.650842, -79.373020));
+        camps.add(new Camp("2nd", 43.662902, -79.391624));
     }
 }

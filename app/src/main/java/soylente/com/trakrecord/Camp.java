@@ -24,10 +24,11 @@ public class Camp {
     }
 
 
-    public String getName() {
+    public String getCampName() {
         return campName;
     }
-
+    public double getLatitude() {return  latitude; }
+    public double getLongitude() {return  longitude; }
     public LatLng getCoords() {
         if(coords == null)  
             coords = new LatLng(latitude, longitude);
